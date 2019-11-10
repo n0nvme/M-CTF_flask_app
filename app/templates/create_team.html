@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center"></h5>
+            <form method="post" id="create_team" class="form-signin">
+
+              <div class="form-label-group">
+                <label for="inputEmail">Name</label>
+                <input type="text" name="name"  class="form-control" placeholder="Username" required autofocus>
+
+              </div>
+
+
+                <div class="form-check">
+                    <input type="checkbox" value="yes" name="show_description" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Public description</label>
+                </div>
+
+
+                <div class="form-label-group">
+                <label for="inputEmail">Desription</label>
+                <input type="text" name="description"  class="form-control" placeholder="description" required autofocus>
+
+              </div>
+                <div class="form-label-group">
+                <label for="inputEmail">country</label>
+                <input type="text" name="country"  class="form-control" placeholder="country" required autofocus>
+
+              </div>
+
+                <div class="form-label-group">
+                <label for="inputEmail">country</label>
+                <input type="text" name="university"  class="form-control" placeholder="university" required autofocus>
+
+              </div>
+
+              <button style="margin-top: 20px"  class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Create Team</button>
+                <button style="margin-top: 20px" id="submit-create-team" class="btn btn-lg btn-primary btn-block text-uppercase" type="button">Team Preview</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+{% endblock %}

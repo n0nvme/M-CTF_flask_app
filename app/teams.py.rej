@@ -1,0 +1,72 @@
+--- app/teams.py
++++ app/teams.py
+@@ -1,17 +1,14 @@
+-import os
+-from pathlib import Path
++import hashlib
+ 
+-from flask import Blueprint, request, render_template, render_template_string, abort, flash, redirect
+-from flask_login import current_user,login_required
++from flask import Blueprint, request, render_template, render_template_string, flash, redirect
++from flask_login import current_user, login_required
+ from flask_pymongo import ObjectId
++from pathlib import Path
+ 
+-import hashlib
++from app import mongo
+ 
+ # from flask_wtf import form
+ 
+-from app import mongo, login
+-from forms import CreateTeam
+-
+ teams = Blueprint('teams', __name__, template_folder='templates')
+ db = mongo.db
+ salt = b"H1NIm"
+@@ -41,15 +38,15 @@ def create_team():
+ 
+         result = db.teams.insert_one({
+             'name': form.get('name', ''),
+-            'show_description': form.get('show_description', ''),
++            'show_description': show_description,
+             'description': form.get('description', ''),
+             'country': form.get('country', ''),
+             'university': form.get('university', ''),
+             'access_code': generate_token(form.get('name', ''), form.get('country', '')),
+             'users': [current_user.id]
+         })
+-        
+-        return redirect('/team/' + result.inserted_id)
++
++        return redirect('/team/' + str(result.inserted_id))
+     return render_template('create_team.html')
+ 
+ 
+@@ -93,15 +90,16 @@ def team_preview():
+ 
+     return render_template_string(template, team=team_dict)
+ 
++
+ @teams.route('/team/join/<id>', methods=['POST'])
+ @login_required
+ def join_to_team(id):
+-    token = request.form.get('token',None)
++    token = request.form.get('token', None)
+     team = db.teams.find_one({'_id': ObjectId(id)})
+-    if token is  not None:
+-        if team is  None:
++    if token is not None:
++        if team is None:
+             flash('Team id is incorrect!')
+-        if token == team.get('access_code',''):
++        if token == team.get('access_code', ''):
+             if current_user.id not in team['users']:
+                 new_users = team['users']
+                 new_users.append(current_user.id)
+@@ -117,6 +115,3 @@ def join_to_team(id):
+         flash('No token')
+ 
+     return render_template('team_profile.html', team=team)
+-
+-
+-

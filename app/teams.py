@@ -1,0 +1,133 @@
+import hashlib
+
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    render_template_string,
+    flash,
+    redirect,
+)
+from flask_login import current_user, login_required
+from flask_pymongo import ObjectId
+from pathlib import Path
+
+from app import mongo
+
+# from flask_wtf import form
+
+teams = Blueprint("teams", __name__, template_folder="templates")
+db = mongo.db
+salt = b"H1NIm"
+
+
+def generate_token(str1, str2):
+    return hashlib.sha256(
+        bytes(str1, "utf-8") + salt + bytes(str2, "utf-8")
+    ).hexdigest()
+
+
+@teams.route("/stats", methods=["GET"])
+def teams_list():
+    teams = db.teams.find({})
+
+    return render_template("teams.html", teams=teams)
+
+
+@teams.route("/team/create", methods=["GET", "POST"])
+@login_required
+def create_team():
+    if request.method == "POST":
+        form = request.form
+
+        if form.get("show_description", "") == "yes":
+            show_description = True
+        else:
+            show_description = False
+
+        result = db.teams.insert_one(
+            {
+                "name": form.get("name", ""),
+                "show_description": form.get("show_description", ""),
+                "description": form.get("description", ""),
+                "country": form.get("country", ""),
+                "university": form.get("university", ""),
+                "access_code": generate_token(
+                    form.get("name", ""), form.get("country", "")
+                ),
+                "users": [current_user.id],
+            }
+        )
+
+        return redirect("/team/" + str(result.inserted_id))
+    return render_template("create_team.html")
+
+
+@teams.route("/team/<id>", methods=["GET"])
+def team_profile(id):
+    team = db.teams.find_one({"$where": 'this._id.equals(ObjectId("' + id + '"))'})
+    return render_template("team_profile.html", team=team)
+
+
+# @teams.route('/team/change/<id>', methods=['POST'])
+# def team_profile_change(id):
+#     form = request.form.get('username')
+#     if form.validate():
+#         if form.show_description.data == 'yes':
+#             show_description = True
+#         else:
+#             show_description = False
+#         template = open('temlates/.html').read() % (form.county.data)
+#         return render_template_string(template)
+
+
+@teams.route("/team/preview/", methods=["POST"])
+def team_preview():
+    form = request.form
+    # if form.show_description == 'yes':
+    #     show_description = True
+    # else:
+    #     show_description = False
+
+    team_dict = {
+        "name": form.get("name", ""),
+        "show_description": form.get("show_description", ""),
+        "description": form.get("description", ""),
+        "country": form.get("country", ""),
+        "university": form.get("university", ""),
+        "access_code": generate_token(form.get("name", ""), form.get("country", "")),
+        # 'users': [current_user.id]
+    }
+    template = (
+        open(str(Path(__file__).parent.absolute()) + "/templates/team_profile.html")
+        .read()
+        .replace("{INSERT_HERE}", form.get("country", ""))
+    )
+
+    return render_template_string(template, team=team_dict)
+
+
+@teams.route("/team/join/<id>", methods=["POST"])
+@login_required
+def join_to_team(id):
+    token = request.form.get("token", None)
+    team = db.teams.find_one({"_id": ObjectId(id)})
+    if token is not None:
+        if team is None:
+            flash("Team id is incorrect!")
+        if token == team.get("access_code", ""):
+            if current_user.id not in team["users"]:
+                new_users = team["users"]
+                new_users.append(current_user.id)
+                team["users"] = new_users
+                db.teams.update({"_id": ObjectId(id)}, {"$set": team})
+                flash("Your join successfully!")
+            else:
+                flash("Your joined yet!")
+        else:
+            flash("Token incorrect!")
+
+    else:
+        flash("No token")
+
+    return render_template("team_profile.html", team=team)

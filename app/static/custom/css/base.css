@@ -1,0 +1,26 @@
+.bg-dark {
+    background-color: black!important;
+    padding:0;
+}
+.navbar .divider-vertical {
+    width: 1px;
+    height: 40px;
+    margin: 0 9px;
+    overflow: hidden;
+    background-color: #222222;
+    border-right: 1px solid #333333;
+}
+
+.dropdown-menu {
+    border-radius: 0;
+    color: #333333;
+    font-size: 13px;
+    margin: 8px 0 0;
+    padding: 4px 0;
+}
+.dropdown-item{
+    padding: 3px 15px;
+}
+.navbar{
+    font-size: 13px;
+}

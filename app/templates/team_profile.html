@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+
+<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+    <h5 class="card-title text-center">Team Data</h5>
+    {% if team %}
+    <ul>
+        <li>Name: {{ team.name }}</li>
+        {% if team.show_description %}
+        <li>Description: {{ team.description }}</li>
+        {% endif %}
+        {% if current_user.id in team.users %}
+        <li>Description: {{ team.description }}</li>
+        {% endif %}
+        <!-- {% if current_user.is_admin %} 
+        <li>Description: {{ team.description }}</li> -->
+        {% endif %}
+        <li>Country: {{ team.country }}</li>
+        <li>University: {{ team.university }}</li>
+        {% if current_user.id in team.users %}
+        <li>Access code: {{ team.access_code }}</li>
+        {% endif %}
+    </ul>
+    {% else %}
+    <!--  {INSERT_HERE} -->
+    <h3>Not Found</h3>
+    {% endif %}
+    <h5 class="card-title text-center">Join to team</h5>
+    <form method="post" action="/team/join/{{ team._id }}" class="form-signin">
+        <div class="form-label-group">
+            <label for="inputEmail">Token</label>
+            <input type="text" name="token" class="form-control" placeholder="Token" required autofocus>
+        </div>
+        <button style="margin-top: 20px" class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">
+            Join
+        </button>
+    </form>
+</div>
+</div>
+{% endblock %}

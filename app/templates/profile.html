@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+        <div class="card card-signin my-5">
+          <div class="card-body">
+            <h5 class="card-title text-center">Change Profile</h5>
+              <h1>{{ current_user.username }}</h1>
+            <form method="post"  class="form-signin">
+
+              <div class="form-label-group">
+                <label for="inputEmail">Username</label>
+                <input type="text" name="username" value="{{ current_user.username }}" class="form-control" placeholder="Username" required autofocus>
+
+              </div>
+
+              <div class="form-label-group">
+                <label for="inputEmail">Passowrd</label>
+                <input type="text" name="password"  value="" class="form-control" placeholder="new password" required autofocus>
+
+              </div>
+
+                <div class="form-label-group">
+                <label for="inputEmail">First name</label>
+                <input type="text" name="first_name"  value="{{ current_user.first_name }}" class="form-control" placeholder="first_name" required autofocus>
+
+              </div>
+                <div class="form-label-group">
+                <label for="inputEmail">Last name</label>
+                <input type="text" name="last_name" value="{{ current_user.last_name }}" class="form-control" placeholder="last name" required autofocus>
+
+              </div>
+                <div class="form-label-group">
+                <label for="inputEmail">Email</label>
+                <input type="text" name="email" value="{{ current_user.email }}" class="form-control" placeholder="last name" required autofocus>
+
+              </div>
+                <div class="form-label-group">
+                <label for="inputEmail">Country</label>
+                <input type="text" name="country" value="{{ current_user.country }}" class="form-control" placeholder=" country" required autofocus>
+
+              </div>
+
+              <button style="margin-top: 20px"  class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Change Profile</button>
+
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+{% endblock %}
